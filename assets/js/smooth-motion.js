@@ -4,11 +4,30 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
   if (reduceMotion.matches) return;
 
-  // Mantém o scroll nativo do navegador. O Lenis estava interpolando cada
-  // wheel/touch e também interceptando links, causando atraso perceptível no
-  // index e na navegação entre páginas, principalmente junto aos pins 3D.
-  // As animações editoriais continuam usando ScrollTrigger, mas sem segurar a
-  // entrada do usuário.
+  if (window.Lenis) {
+    const lenis = new Lenis({
+      lerp: .075,
+      smoothWheel: true,
+      wheelMultiplier: .88,
+      touchMultiplier: 1.05,
+      anchors: true
+    });
+
+    document.documentElement.classList.add("lenis");
+    lenis.on("scroll", () => window.ScrollTrigger && ScrollTrigger.update());
+
+    if (window.gsap) {
+      gsap.ticker.add((time) => lenis.raf(time * 1000));
+      gsap.ticker.lagSmoothing(0);
+    } else {
+      const raf = (time) => {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      };
+      requestAnimationFrame(raf);
+    }
+  }
+
   if (!window.gsap || !window.ScrollTrigger) return;
   gsap.registerPlugin(ScrollTrigger);
 
@@ -22,7 +41,7 @@
       trigger: hero,
       start: "top top",
       end: "bottom top",
-      scrub: .35,
+      scrub: 1.35,
       invalidateOnRefresh: true
     }
   })
