@@ -1,3 +1,5 @@
+if(document.body.classList.contains('ativos-page')){const nav=document.querySelector('.flowing-menu');if(nav){const items=[['Home','index.html','6114.jpg'],['Institucional','sobre.html','6124.jpg'],['Viver Amato e Lima','reformas.html','6122.jpg'],['Ativos Imobiliários','ativos.html','27946.jpg'],['Contato','contato.html','31884.jpg']];nav.setAttribute('aria-label','Navegação principal');nav.innerHTML=items.map(([label,href,img])=>`<div class="flowing-menu__item" data-flowing-menu-item data-speed="15"><a class="flowing-menu__link" href="${href}"><span class="flowing-menu__label">${label}</span></a><div class="flowing-menu__marquee" aria-hidden="true"><div class="flowing-menu__marquee-wrap"><div class="flowing-menu__marquee-inner" data-flowing-menu-inner><div class="flowing-menu__part" data-flowing-menu-part><span>${label}</span><img class="flowing-menu__img" src="assets/images/menu/${img}" alt=""></div></div></div></div></div>`).join('')}}
+
 const menuButton = document.querySelector("[data-menu-toggle]");
 const navigation = document.querySelector("[data-navigation]");
 const overlayHeader = document.querySelector("[data-overlay-header]");
