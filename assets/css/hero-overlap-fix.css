@@ -1,0 +1,32 @@
+/* Mantém a sobreposição Arte/madeira estável em diferentes proporções de tela.
+   A madeira continua na posição aprovada; somente Arte recebe compensação
+   quando a viewport fica proporcionalmente baixa. */
+
+@media (min-width: 761px) {
+  .hero-art__arte {
+    /* 30svh era sensível demais à altura da janela. A compensação pela
+       proporção impede a palavra de afundar atrás da madeira em notebooks. */
+    top: clamp(168px, 22.5svh, 238px);
+  }
+}
+
+/* Notebooks/telas desktop baixas: preserva apenas um pequeno encontro com a madeira. */
+@media (min-width: 761px) and (max-height: 820px) {
+  .hero-art__arte {
+    top: clamp(150px, 20svh, 178px);
+  }
+}
+
+@media (min-width: 761px) and (max-height: 700px) {
+  .hero-art__arte {
+    top: clamp(132px, 18svh, 150px);
+  }
+}
+
+/* Mobile usa outra máscara; limita a descida de Arte independentemente
+   da altura extra criada pelo hero. */
+@media (max-width: 760px) {
+  .hero-art__arte {
+    top: clamp(172px, 22svh, 220px);
+  }
+}
