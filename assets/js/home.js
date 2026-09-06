@@ -16,15 +16,6 @@ const flowingMenuItems = [
   { label: "Contato", href: "contato.html", image: "assets/images/menu/31884.jpg", position: "center" },
 ];
 
-const materialSpiralImages = [
-  { image: "assets/images/sections-home/28152.jpg", alt: "Composição que representa a matéria antes do ativo imobiliário" },
-  { image: "assets/images/material/31803.jpg", alt: "Detalhe de madeira clara" },
-  { image: "assets/images/material/31805.jpg", alt: "Detalhe de piso em travertino" },
-  { image: "assets/images/material/31806.jpg", alt: "Detalhe de vidro reflecta bronze" },
-  { image: "assets/images/material/31808.jpg", alt: "Detalhe de pedra em quartzo branco" },
-  { image: "assets/images/sections-home/31868.jpg", alt: "Detalhe de pedra natural Hijau" },
-];
-
 function navigationTemplate() {
   return navigationItems.map(({ label, href, current }) => `<li><a href="${href}"${current ? ' aria-current="page"' : ""}>${label}</a></li>`).join("");
 }
@@ -36,12 +27,6 @@ function flowingMenuTemplate() {
 
 function heroTemplate() {
   return `<section class="hero hero--art" aria-labelledby="home-title"><div class="hero-art__brand" aria-label="Amato Lima — Ativos Imobiliários"><div class="hero-art__brand-line"><span class="hero-art__brand-name">Amato Lima</span><img class="hero-art__brand-mark" src="assets/images/logo/9175.png" alt="" aria-hidden="true" /></div><span class="hero-art__brand-descriptor">Ativos Imobiliários</span></div><h1 id="home-title" class="hero-art__headline"><span class="hero-art__arte">Arte</span><span class="hero-art__de">de</span><span class="hero-art__habitar">habitar</span></h1><picture><source media="(max-width: 760px)" srcset="assets/images/hero-mask-2.png" /><img class="hero-art__wood" src="assets/images/hero-mask.png" alt="" aria-hidden="true" /></picture><span class="hero-art__base-reflection" aria-hidden="true"></span></section>`;
-}
-
-function perspectiveTemplate() {
-  const scrollPhrases = ["A MATÉRIA PRECEDE O ATIVO","MADEIRA CLARA","PISO TRAVERTINO","VIDROS REFLECTA BRONZE","PEDRAS EM QUARTZO BRANCO","PEDRA NATURAL HIJAU"];
-  const cards = scrollPhrases.map((phrase,index)=>{const item=materialSpiralImages[index];return `<figure class="material-spiral__card" data-spiral-card data-spiral-label="${phrase}"><img src="${item.image}" alt="${item.alt}" loading="lazy" draggable="false" /></figure>`;}).join("");
-  return `<section class="material-spiral" id="perspectiva" aria-labelledby="material-title" data-material-scroll><div class="material-spiral__viewport"><div class="material-spiral__copy"><h2 class="material-spiral__title" id="material-title" data-spiral-text aria-live="polite"></h2></div><div class="material-spiral__gallery" data-material-spiral aria-label="Carrossel de materiais controlado pelo scroll"><div class="material-spiral__stage">${cards}</div></div><div class="material-card-experience" data-material-card aria-label="Cartão Amato Lima com projetos selecionados"><div class="material-card-experience__fluid" data-ferrofluid aria-hidden="true"></div><div class="material-card-experience__stage"><div class="material-card-experience__card" data-project-card><div class="material-card-experience__face material-card-experience__face--project"><div class="material-card-experience__projects"><img class="is-active" data-card-project src="assets/images/sections-home/11693.png" alt="Projeto Amato Lima" /><img data-card-project src="assets/images/sections-home/11693.png" alt="Projeto Amato Lima" /><img data-card-project src="assets/images/sections-home/11693.png" alt="Projeto Amato Lima" /></div><span class="material-card-experience__reflection" data-card-reflection aria-hidden="true"></span></div><div class="material-card-experience__face material-card-experience__face--identity" style="background-image:url('assets/images/card/10494.png');background-size:cover;background-position:center;background-repeat:no-repeat;"><img class="material-card-experience__mark" src="assets/images/monograma.png" alt="" /></div></div></div></div></div></section>`;
 }
 
 function editorialRevealMarkup(title, first, second="") {
@@ -67,7 +52,7 @@ function projectsTemplate() {
 }
 
 function interactiveApartmentTemplate() { return `<section class="apartment-build" id="transformacao-3d" data-apartment-build><div class="apartment-build__pin"><div class="apartment-build__backdrop" data-apartment-backdrop aria-hidden="true"></div><div class="apartment-build__scene" data-apartment-scene><canvas data-apartment-canvas aria-label="Apartamento tridimensional sendo construído durante a rolagem"></canvas><p class="apartment-build__fallback" data-apartment-fallback hidden>Uma residência é desenhada, estruturada e materializada.</p></div><div class="apartment-build__counter" aria-hidden="true"><span data-apartment-step>01</span><i></i><span>04</span></div><div class="apartment-build__progress" aria-hidden="true"><span data-apartment-progress></span></div></div></section>`; }
-function mainTemplate() { return `<main id="conteudo"><div class="hero-material-stack">${heroTemplate()}${perspectiveTemplate()}</div>${principlesTemplate()}${projectsTemplate()}${interactiveApartmentTemplate()}</main>`; }
+function mainTemplate() { return `<main id="conteudo">${heroTemplate()}${principlesTemplate()}${projectsTemplate()}${interactiveApartmentTemplate()}</main>`; }
 function footerTemplate() { return `<footer class="site-footer"></footer>`; }
 function renderHome() { const app=document.querySelector("[data-app]"); if(!app)throw new Error("O elemento principal da aplicação não foi encontrado."); document.body.classList.add("home-page"); app.innerHTML=`${flowingMenuTemplate()}${mainTemplate()}${footerTemplate()}`; }
 renderHome();
