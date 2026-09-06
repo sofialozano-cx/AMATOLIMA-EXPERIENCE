@@ -1,7 +1,7 @@
 "use strict";
 
 (function initAmatoFooter(){
-  const app=document.querySelector("[data-app]");
+  const app=document.querySelector("[data-app]") || document.body;
   if(!app||document.querySelector(".amato-footer"))return;
 
   const oldFooter=app.querySelector("footer");
