@@ -6,6 +6,7 @@
   const poster=document.querySelector('.scroll-video__poster');
   const ctx=canvas&&canvas.getContext('2d');
   const reveals=[...document.querySelectorAll('.reveal')];
+  const muxSource='https://stream.mux.com/01yW6GoUz01OTXk5w1Rt1MHkJWlCGIwj46SUONJZ4DJUE.m3u8';
 
   const observer=new IntersectionObserver(entries=>{
     entries.forEach(entry=>{if(entry.isIntersecting)entry.target.classList.add('is-visible');});
@@ -13,6 +14,17 @@
   reveals.forEach(el=>observer.observe(el));
 
   if(!video||!canvas||!ctx)return;
+
+  if(video.canPlayType('application/vnd.apple.mpegurl')){
+    video.src=muxSource;
+  }else if(window.Hls&&window.Hls.isSupported()){
+    const hls=new window.Hls({enableWorker:true,lowLatencyMode:false,backBufferLength:8,maxBufferLength:18,maxMaxBufferLength:24});
+    hls.loadSource(muxSource);
+    hls.attachMedia(video);
+  }else{
+    return;
+  }
+
   const dpr=()=>Math.min(window.devicePixelRatio||1,2);
   function resize(){
     const r=dpr();
@@ -34,10 +46,10 @@
     const scale=Math.max(cw/vw,ch/vh),dw=vw*scale,dh=vh*scale;
     ctx.clearRect(0,0,cw,ch);
     ctx.drawImage(video,(cw-dw)/2,(ch-dh)/2,dw,dh);
-    if(!ready){ready=true;canvas.style.opacity='1';video.style.opacity='0';poster.style.opacity='0';}
+    if(!ready){ready=true;canvas.style.opacity='1';video.style.opacity='0';if(poster)poster.style.opacity='0';}
   }
   video.addEventListener('loadeddata',()=>{
-    video.style.opacity='1';poster.style.opacity='0';
+    video.style.opacity='1';if(poster)poster.style.opacity='0';
     try{video.currentTime=.01;}catch(e){}
   });
   video.addEventListener('seeked',()=>{seeking=false;drawVideo();});
@@ -45,8 +57,8 @@
     target=progress();
     smoothed+=(target-smoothed)*.12;
     if(Number.isFinite(video.duration)&&video.duration>0&&!seeking){
-      const t=smoothed*Math.max(0,video.duration-.05);
-      if(Math.abs((video.currentTime||0)-t)>.04){seeking=true;try{video.currentTime=t;}catch(e){seeking=false;}}
+      const t=smoothed*Math.max(0,video.duration-.08);
+      if(Math.abs((video.currentTime||0)-t)>.055){seeking=true;try{video.currentTime=t;}catch(e){seeking=false;}}
       else drawVideo();
     }
     requestAnimationFrame(tick);
