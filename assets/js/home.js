@@ -56,7 +56,12 @@ function principlesTemplate() {
 }
 
 function projectsTemplate() {
-  const projects=[{name:"Residência Horizonte",location:"Jardim Europa — São Paulo, SP"},{name:"Casa Matéria",location:"Alto de Pinheiros — São Paulo, SP"},{name:"Apartamento Luz",location:"Itaim Bibi — São Paulo, SP"},{name:"Casa Jardim",location:"Cidade Jardim — São Paulo, SP"}];
+  const projects=[
+    {name:"Rua Sergipe",location:"Higienópolis — São Paulo, SP"},
+    {name:"Avenida Ribeirão Preto",location:"Tamboré — São Paulo, SP"},
+    {name:"Alameda Argentina",location:"Alphaville — São Paulo, SP"},
+    {name:"Alameda Casa Branca",location:"Jardins — São Paulo, SP"}
+  ];
   const projectRows=projects.map(({name,location})=>`<li class="project-index__item"><span class="project-index__name">${name}</span><span class="project-index__location">${location}</span></li>`).join("");
   return `<section class="project-index" id="projetos-selecionados" aria-labelledby="project-index-title"><div class="project-index__heading-wrap"><h2 class="project-index__heading" id="project-index-title"><span class="project-index__line project-index__line--one">SÃO PAULO,</span><span class="project-index__line project-index__line--two">SOB O OLHAR</span><span class="project-index__line project-index__line--three">AMATO LIMA</span></h2></div><div class="project-index__list-wrap"><ul class="project-index__list" aria-label="Projetos selecionados">${projectRows}</ul></div></section>`;
 }
