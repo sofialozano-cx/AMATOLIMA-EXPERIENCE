@@ -2,6 +2,13 @@
    A madeira continua na posição aprovada; somente Arte recebe compensação
    quando a viewport fica proporcionalmente baixa. */
 
+/* O antigo encontro Hero → carrossel usava a hero como sticky. Como o carrossel
+   foi removido, a hero volta ao fluxo normal e entrega diretamente a próxima seção. */
+.hero--art {
+  position: relative;
+  top: auto;
+}
+
 @media (min-width: 761px) {
   .hero-art__arte {
     /* 30svh era sensível demais à altura da janela. A compensação pela
@@ -26,6 +33,10 @@
 /* Mobile usa outra máscara; limita a descida de Arte independentemente
    da altura extra criada pelo hero. */
 @media (max-width: 760px) {
+  .hero--art {
+    top: auto;
+  }
+
   .hero-art__arte {
     top: clamp(172px, 22svh, 220px);
   }
