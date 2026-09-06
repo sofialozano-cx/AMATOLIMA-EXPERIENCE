@@ -2,20 +2,18 @@
 
 (function(){
   const selectors=[
-    '.nova-top-row > *',
     '.service-list span',
     '.nova-headline',
     '.accent-badge',
     '.nova-intro',
-    '.institutional-accordion',
-    '.capability-copy > *',
-    '.institutional-morph-slider'
+    '.capability-body',
+    '.nova-actions'
   ];
   const reveals=[...new Set(selectors.flatMap(selector=>[...document.querySelectorAll(selector)]))];
 
   reveals.forEach((el,index)=>{
     el.classList.add('reveal');
-    el.style.setProperty('--delay',`${(index%4)*70}ms`);
+    el.style.setProperty('--delay',`${(index%4)*95}ms`);
   });
 
   const observer=new IntersectionObserver(entries=>{
@@ -25,7 +23,7 @@
         observer.unobserve(entry.target);
       }
     });
-  },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+  },{threshold:.18,rootMargin:'0px 0px -12% 0px'});
 
   reveals.forEach(el=>observer.observe(el));
 })();
