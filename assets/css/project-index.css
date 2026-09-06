@@ -3,13 +3,19 @@
   z-index:2;
   margin:0;
   padding:10svh clamp(18px,3vw,48px) clamp(110px,14vw,210px);
-  overflow:hidden;
+  overflow:visible;
   background:#f1f1f1;
 }
 
 .project-index__heading-wrap{
   width:min(1160px,86vw);
-  margin:0 auto clamp(72px,9vw,130px);
+  margin:0 auto clamp(32px,4vw,56px);
+}
+
+.project-index .closing-collage{
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+  margin-bottom:clamp(32px,4vw,56px);
 }
 
 .project-index__heading{
@@ -98,7 +104,11 @@
 
   .project-index__heading-wrap{
     width:100%;
-    margin-bottom:64px;
+    margin-bottom:28px;
+  }
+
+  .project-index .closing-collage{
+    margin-bottom:28px;
   }
 
   .project-index__heading{
