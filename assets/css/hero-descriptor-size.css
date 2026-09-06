@@ -1,0 +1,4 @@
+/* Ajuste pontual: aumenta somente “Ativos Imobiliários” da assinatura da hero em 10%. */
+.hero-art__brand-descriptor {
+  font-size: clamp(.538138rem, .745114vw, .703718rem);
+}
