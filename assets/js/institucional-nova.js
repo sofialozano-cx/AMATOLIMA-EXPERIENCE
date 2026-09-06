@@ -8,6 +8,25 @@
   const reveals=[...document.querySelectorAll('.reveal')];
   const muxSource='https://stream.mux.com/01yW6GoUz01OTXk5w1Rt1MHkJWlCGIwj46SUONJZ4DJUE.m3u8';
 
+  document.querySelectorAll('.ag-panel').forEach(panel=>{
+    const label=panel.querySelector('.ag-panel__text');
+    if(label&&label.textContent.trim()==='Madeira'){
+      label.textContent='Acabamento';
+      panel.setAttribute('aria-label','Acabamento');
+    }
+  });
+
+  const story=document.querySelector('.institutional-positioning__block--story');
+  const storyTitle=story&&story.querySelector('.institutional-positioning__title');
+  if(storyTitle)storyTitle.textContent='A HISTÓRIA';
+  if(story&&!story.querySelector('.founder-orbit')){
+    const visual=document.createElement('div');
+    visual.className='founder-orbit';
+    visual.setAttribute('aria-hidden','true');
+    visual.innerHTML='<div class="founder-orbit__arc"></div><div class="founder-orbit__word founder-orbit__word--1">DIREITO IMOBILIÁRIO</div><div class="founder-orbit__word founder-orbit__word--2">ENGENHARIA CIVIL</div><div class="founder-orbit__word founder-orbit__word--3">ARQUITETURA</div><div class="founder-orbit__word founder-orbit__word--4">NEGÓCIOS</div><div class="founder-orbit__word founder-orbit__word--5">MERCADO IMOBILIÁRIO</div><div class="founder-orbit__word founder-orbit__word--6">PATRIMÔNIO</div>';
+    story.parentElement.insertBefore(visual,story);
+  }
+
   const observer=new IntersectionObserver(entries=>{
     entries.forEach(entry=>{if(entry.isIntersecting)entry.target.classList.add('is-visible');});
   },{threshold:.15});
