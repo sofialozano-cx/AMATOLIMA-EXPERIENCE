@@ -15,6 +15,7 @@
   const gsapApi = window.gsap;
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const marqueeTweens = new WeakMap();
+  const preparedItems = new WeakSet();
   let isOpen = false;
   let busy = false;
 
@@ -24,14 +25,21 @@
   const waapiEase = "cubic-bezier(.16,1,.3,1)";
 
   const repeatMarqueeParts = item => {
+    if (preparedItems.has(item)) return;
     const inner = item.querySelector("[data-flowing-menu-inner]");
     const original = inner?.querySelector("[data-flowing-menu-part]");
     if (!inner || !original) return;
-    inner.querySelectorAll("[data-flowing-menu-part]:not(:first-child)").forEach(part => part.remove());
     const width = Math.max(original.getBoundingClientRect().width, 1);
-    const repetitions = Math.max(4, Math.ceil(panel.getBoundingClientRect().width / width) + 2);
-    for (let index = 1; index < repetitions; index += 1) inner.appendChild(original.cloneNode(true));
+    const repetitions = Math.max(4, Math.ceil((panel.clientWidth || window.innerWidth) / width) + 2);
+    const fragment = document.createDocumentFragment();
+    for (let index = 1; index < repetitions; index += 1) fragment.appendChild(original.cloneNode(true));
+    inner.appendChild(fragment);
+    preparedItems.add(item);
   };
+
+  const prepareMarquees = () => itemEls.forEach(repeatMarqueeParts);
+  if ("requestIdleCallback" in window) requestIdleCallback(prepareMarquees, { timeout: 1200 });
+  else setTimeout(prepareMarquees, 350);
 
   const startItemMarquee = item => {
     repeatMarqueeParts(item);
@@ -111,7 +119,9 @@
 
   const openMenu = () => {
     if (busy || isOpen) return;
-    busy = true; isOpen = true; setAccessibleState(true); itemEls.forEach(repeatMarqueeParts);
+    busy = true;
+    isOpen = true;
+    setAccessibleState(true);
     if (!gsapApi || reducedMotion) {
       const layers=[...prelayers,panel];
       layers.forEach((el,index)=>{el.getAnimations().forEach(a=>a.cancel());el.animate([{transform:"translateY(-105%)"},{transform:"translateY(0)"}],{duration:index===layers.length-1?620:480,delay:index*70,easing:waapiEase,fill:"forwards"});});
