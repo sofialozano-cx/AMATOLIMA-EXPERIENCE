@@ -30,6 +30,9 @@
 }
 
 .project-index__line--one{
+  position:relative;
+  padding-top:.12em;
+  margin-top:-.12em;
   text-align:left;
 }
 
