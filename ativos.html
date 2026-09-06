@@ -7,13 +7,36 @@
     <title>Ativos | Amato Lima</title>
     <link rel="stylesheet" href="assets/css/styles.css" />
     <style>
-      /* Restaura somente o fundo da página Ativos ao neutro anterior. */
-      body { background: var(--nevoa); }
-      .page-hero { background: var(--nevoa); }
+      html, body { overflow-x: hidden; }
+      body { position: relative; background: transparent; }
+      .ativos-video-background {
+        position: fixed;
+        z-index: -2;
+        inset: 0;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+        background: #000;
+      }
+      .ativos-video-background video {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+      }
+      main, .page-hero, .section { background: transparent; }
+      .section--linen { background: rgba(239,231,219,.92); }
+      .site-footer { position: relative; }
     </style>
     <script src="assets/js/main.js" defer></script>
   </head>
   <body>
+    <div class="ativos-video-background" aria-hidden="true">
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260819_212700_3bb9329b-5c50-4257-a09b-ca85cf3654a3.mp4" type="video/mp4" />
+      </video>
+    </div>
+
     <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
 
     <main id="conteudo">
