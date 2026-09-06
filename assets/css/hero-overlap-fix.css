@@ -1,43 +1,38 @@
-/* Mantém a sobreposição Arte/madeira estável em diferentes proporções de tela.
-   A madeira continua na posição aprovada; somente Arte recebe compensação
-   quando a viewport fica proporcionalmente baixa. */
-
-/* O antigo encontro Hero → carrossel usava a hero como sticky. Como o carrossel
-   foi removido, a hero volta ao fluxo normal e entrega diretamente a próxima seção. */
+/* Hero em fluxo normal após a remoção do carrossel. */
 .hero--art {
   position: relative;
   top: auto;
 }
 
+/* A posição de Arte passa a responder principalmente à largura da tela,
+   evitando que notebooks com pouca altura empurrem a palavra para dentro
+   da madeira. O z-index garante que a palavra permaneça legível em qualquer
+   proporção de viewport. */
+.hero-art__arte {
+  z-index: 3 !important;
+}
+
 @media (min-width: 761px) {
   .hero-art__arte {
-    /* 30svh era sensível demais à altura da janela. A compensação pela
-       proporção impede a palavra de afundar atrás da madeira em notebooks. */
-    top: clamp(168px, 22.5svh, 238px);
+    top: clamp(132px, 12.2vw, 196px) !important;
   }
 }
 
-/* Notebooks/telas desktop baixas: preserva apenas um pequeno encontro com a madeira. */
 @media (min-width: 761px) and (max-height: 820px) {
   .hero-art__arte {
-    top: clamp(150px, 20svh, 178px);
+    top: clamp(118px, 10.8vw, 164px) !important;
   }
 }
 
 @media (min-width: 761px) and (max-height: 700px) {
   .hero-art__arte {
-    top: clamp(132px, 18svh, 150px);
+    top: clamp(102px, 9.4vw, 138px) !important;
   }
 }
 
-/* Mobile usa outra máscara; limita a descida de Arte independentemente
-   da altura extra criada pelo hero. */
 @media (max-width: 760px) {
-  .hero--art {
-    top: auto;
-  }
-
+  .hero--art { top: auto; }
   .hero-art__arte {
-    top: clamp(172px, 22svh, 220px);
+    top: clamp(142px, 38vw, 198px) !important;
   }
 }
