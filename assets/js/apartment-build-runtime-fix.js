@@ -27,9 +27,9 @@
       .replace('new THREE.RectAreaLight(0xffd7a0, 2.4, 4, 2.5)', 'new THREE.RectAreaLight(0xffa94f, 5.6, 4, 2.5)')
       .replace('new THREE.PointLight(0xe7bc79, 0, 18, 1.7)', 'new THREE.PointLight(0xff9f45, 0, 18, 1.7)')
 
-      // Materiais com hierarquia mais forte: menos bege/branco, mais madeira, verde e bronze.
-      .replace('plaster: 0xe8e4dc', 'plaster: 0xe1d5c5')
-      .replace('plasterWarm: 0xded9d0', 'plasterWarm: 0xcdbba7')
+      // Materiais com hierarquia mais forte: paredes agora ~50% mais claras em relação ao travertino.
+      .replace('plaster: 0xe8e4dc', 'plaster: 0xf1ebe3')
+      .replace('plasterWarm: 0xded9d0', 'plasterWarm: 0xe9ded1')
       .replace('wood: 0x8a5c3a', 'wood: 0x75411f')
       .replace('woodLight: 0xc4a17b', 'woodLight: 0xa96b35')
       .replace('stone: 0xeee8dc', 'stone: 0xd8c5aa')
