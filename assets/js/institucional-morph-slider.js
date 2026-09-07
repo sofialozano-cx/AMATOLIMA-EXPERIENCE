@@ -4,6 +4,7 @@ const root=document.querySelector('[data-morph-slider]');
 if(root){
  const stage=root.querySelector('[data-morph-stage]');
  const captions=[...root.querySelectorAll('[data-morph-caption]')];
+ ['Arquitetura','Proporção','Materialidade','Luz Integrada'].forEach((label,i)=>{if(captions[i])captions[i].textContent=label});
  const dots=[...root.querySelectorAll('[data-morph-dot]')];
  const items=[
   'assets/images/ativos/alphaville-fachada.png','assets/images/ativos/alphaville-piscina.png','assets/images/ativos/banheira-tambore.png','assets/images/ativos/higienopolis-banheiro.png'
