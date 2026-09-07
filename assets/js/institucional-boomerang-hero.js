@@ -4,19 +4,14 @@
   const video=root.querySelector('video'),canvas=root.querySelector('canvas');
   if(!video||!canvas)return;
 
-  // Scrub contínuo: o vídeo não toca sozinho, mas desliza suavemente enquanto a página rola.
-  let duration=0;
-  let targetTime=0;
-  let currentTime=0;
-  let lastApplied=-1;
-  let raf=0;
+  let duration=0,targetTime=0,currentTime=0,lastApplied=-1,raf=0;
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 
-  const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
-
+  // A hero começa exatamente no primeiro frame e usa a altura da própria hero como scrub.
   const getProgress=()=>{
     const rect=root.getBoundingClientRect();
-    const travel=Math.max(1,root.offsetHeight+window.innerHeight);
-    return clamp((window.innerHeight-rect.top)/travel,0,1);
+    const travel=Math.max(1,root.offsetHeight);
+    return clamp(-rect.top/travel,0,1);
   };
 
   const updateTarget=()=>{
@@ -28,20 +23,14 @@
   const render=()=>{
     raf=0;
     if(!duration)return;
-
-    // Lerp mais longo cria a sensação de o filme estar realmente rodando durante o scroll,
-    // em vez de saltar de frame em frame a cada evento da roda/trackpad.
     const delta=targetTime-currentTime;
     currentTime+=delta*.14;
     if(Math.abs(delta)<.0015)currentTime=targetTime;
-
     const safeTime=clamp(currentTime,0,Math.max(0,duration-.045));
-    // Evita seeks microscópicos demais, que fazem MP4/UHD parecer travado em alguns navegadores.
     if(Math.abs(safeTime-lastApplied)>.006||safeTime===targetTime){
       video.currentTime=safeTime;
       lastApplied=safeTime;
     }
-
     if(Math.abs(targetTime-currentTime)>.0015)raf=requestAnimationFrame(render);
   };
 
@@ -58,9 +47,8 @@
 
   video.pause();
   video.addEventListener('loadedmetadata',ready,{once:true});
-  video.addEventListener('durationchange',()=>{
-    if(Number.isFinite(video.duration))duration=video.duration;
-  });
+  video.addEventListener('loadeddata',()=>{video.style.visibility='visible';},{once:true});
+  video.addEventListener('durationchange',()=>{if(Number.isFinite(video.duration))duration=video.duration;});
   window.addEventListener('scroll',updateTarget,{passive:true});
   window.addEventListener('resize',updateTarget,{passive:true});
   if(video.readyState>=1)ready();
