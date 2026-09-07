@@ -1,55 +1,60 @@
 (()=>{
   const root=document.querySelector('[data-boomerang-hero]');
   if(!root)return;
-  const video=root.querySelector('video'),canvas=root.querySelector('canvas');
-  if(!video||!canvas)return;
+  const media=root.querySelector('.institutional-boomerang-hero__media');
+  if(!media)return;
 
-  let duration=0,targetTime=0,currentTime=0,lastApplied=-1,raf=0;
+  const frames=[
+    'assets/images/background/ChatGPT Image 6 de set. de 2026, 23_55_19.png',
+    'assets/images/background/ChatGPT Image 6 de set. de 2026, 23_56_10.png',
+    'assets/images/background/ChatGPT Image 6 de set. de 2026, 23_57_01.png',
+    'assets/images/background/ChatGPT Image 6 de set. de 2026, 23_57_46.png',
+    'assets/images/background/ChatGPT Image 6 de set. de 2026, 23_58_27.png',
+    'assets/images/background/ChatGPT Image 6 de set. de 2026, 23_59_16.png',
+    'assets/images/background/ChatGPT Image 6 de set. de 2026, 23_59_59.png',
+    'assets/images/background/ChatGPT Image 7 de set. de 2026, 00_00_41.png'
+  ];
+
+  media.innerHTML='';
+  const layers=frames.map((src,index)=>{
+    const img=new Image();
+    img.className='institutional-boomerang-hero__frame';
+    img.alt='';
+    img.decoding='async';
+    if(index===0)img.fetchPriority='high';
+    img.src=encodeURI(src);
+    img.style.opacity=index===0?'1':'0';
+    media.appendChild(img);
+    return img;
+  });
+
+  let target=0,current=0,raf=0;
   const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+  const getProgress=()=>clamp(-root.getBoundingClientRect().top/Math.max(1,root.offsetHeight),0,1);
 
-  // A hero começa exatamente no primeiro frame e usa a altura da própria hero como scrub.
-  const getProgress=()=>{
-    const rect=root.getBoundingClientRect();
-    const travel=Math.max(1,root.offsetHeight);
-    return clamp(-rect.top/travel,0,1);
-  };
-
-  const updateTarget=()=>{
-    if(!duration)return;
-    targetTime=getProgress()*Math.max(0,duration-.045);
-    if(!raf)raf=requestAnimationFrame(render);
-  };
-
-  const render=()=>{
+  const paint=()=>{
     raf=0;
-    if(!duration)return;
-    const delta=targetTime-currentTime;
-    currentTime+=delta*.14;
-    if(Math.abs(delta)<.0015)currentTime=targetTime;
-    const safeTime=clamp(currentTime,0,Math.max(0,duration-.045));
-    if(Math.abs(safeTime-lastApplied)>.006||safeTime===targetTime){
-      video.currentTime=safeTime;
-      lastApplied=safeTime;
-    }
-    if(Math.abs(targetTime-currentTime)>.0015)raf=requestAnimationFrame(render);
+    const delta=target-current;
+    current+=delta*.18;
+    if(Math.abs(delta)<.0008)current=target;
+    const position=current*(layers.length-1);
+    const base=Math.floor(position);
+    const mix=position-base;
+    layers.forEach((layer,i)=>{
+      let opacity=0;
+      if(i===base)opacity=1-mix;
+      else if(i===Math.min(base+1,layers.length-1))opacity=mix;
+      layer.style.opacity=String(opacity);
+    });
+    if(Math.abs(target-current)>.0008)raf=requestAnimationFrame(paint);
   };
 
-  const ready=()=>{
-    duration=Number.isFinite(video.duration)?video.duration:0;
-    video.pause();
-    video.removeAttribute('autoplay');
-    video.style.display='block';
-    canvas.style.display='none';
-    currentTime=targetTime=getProgress()*Math.max(0,duration-.045);
-    video.currentTime=currentTime;
-    lastApplied=currentTime;
+  const sync=()=>{
+    target=getProgress();
+    if(!raf)raf=requestAnimationFrame(paint);
   };
 
-  video.pause();
-  video.addEventListener('loadedmetadata',ready,{once:true});
-  video.addEventListener('loadeddata',()=>{video.style.visibility='visible';},{once:true});
-  video.addEventListener('durationchange',()=>{if(Number.isFinite(video.duration))duration=video.duration;});
-  window.addEventListener('scroll',updateTarget,{passive:true});
-  window.addEventListener('resize',updateTarget,{passive:true});
-  if(video.readyState>=1)ready();
+  window.addEventListener('scroll',sync,{passive:true});
+  window.addEventListener('resize',sync,{passive:true});
+  sync();
 })();
