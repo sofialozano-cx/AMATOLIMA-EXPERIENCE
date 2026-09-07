@@ -3,69 +3,57 @@
   if(!root)return;
   const video=root.querySelector('video'),canvas=root.querySelector('canvas');
   if(!video||!canvas)return;
-  const ctx=canvas.getContext('2d');
-  if(!ctx)return;
 
-  const SPEED=.82;
-  const SCROLL_INFLUENCE=.58;
-  const frames=[];
-  let lastTime=-1,capturing=true,playing=false;
-  let scrollVelocity=0,lastScrollY=window.scrollY,lastScrollTime=performance.now();
+  // O vídeo não roda sozinho: o tempo é controlado exclusivamente pelo scroll.
+  let duration=0;
+  let targetTime=0;
+  let currentTime=0;
+  let raf=0;
 
-  const onScroll=()=>{
-    const now=performance.now();
-    const y=window.scrollY;
-    const dt=Math.max(16,now-lastScrollTime);
-    scrollVelocity=(y-lastScrollY)/dt;
-    lastScrollY=y;
-    lastScrollTime=now;
-  };
-  window.addEventListener('scroll',onScroll,{passive:true});
+  const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 
-  const capture=()=>{
-    if(!capturing||video.ended)return;
-    const t=video.currentTime;
-    if(video.videoWidth&&t!==lastTime){
-      lastTime=t;
-      const w=Math.min(960,video.videoWidth),h=Math.round(w*video.videoHeight/video.videoWidth),c=document.createElement('canvas');
-      c.width=w;c.height=h;
-      const x=c.getContext('2d');
-      x.drawImage(video,0,0,w,h);
-      frames.push(c);
-    }
-    if('requestVideoFrameCallback'in video)video.requestVideoFrameCallback(capture);else requestAnimationFrame(capture);
+  const getProgress=()=>{
+    const rect=root.getBoundingClientRect();
+    const travel=Math.max(1,root.offsetHeight+window.innerHeight);
+    return clamp((window.innerHeight-rect.top)/travel,0,1);
   };
 
-  const start=()=>{
-    video.playbackRate=SPEED;
-    video.play().catch(()=>{});
-    if('requestVideoFrameCallback'in video)video.requestVideoFrameCallback(capture);else requestAnimationFrame(capture);
+  const render=()=>{
+    raf=0;
+    if(!duration)return;
+    // Resposta rápida, mas com uma pequena suavização para não tremer em trackpads.
+    currentTime+=(targetTime-currentTime)*.38;
+    if(Math.abs(targetTime-currentTime)<.002)currentTime=targetTime;
+    const safeEnd=Math.max(0,duration-.035);
+    video.currentTime=clamp(currentTime,0,safeEnd);
+    if(Math.abs(targetTime-currentTime)>.002)raf=requestAnimationFrame(render);
   };
 
-  video.addEventListener('loadeddata',start,{once:true});
-  video.addEventListener('ended',()=>{
-    capturing=false;
-    if(frames.length<2)return;
-    canvas.width=frames[0].width;
-    canvas.height=frames[0].height;
-    video.style.display='none';
-    canvas.style.display='block';
-    let position=0,dir=1,last=0;
-    playing=true;
+  const syncToScroll=()=>{
+    if(!duration)return;
+    const progress=getProgress();
+    const safeEnd=Math.max(0,duration-.035);
+    targetTime=progress*safeEnd;
+    if(!raf)raf=requestAnimationFrame(render);
+  };
 
-    const loop=ts=>{
-      if(!playing)return;
-      const dt=last?Math.min(50,ts-last):16.67;
-      last=ts;
-      scrollVelocity*=.9;
-      const scrollBoost=Math.max(-1.25,Math.min(1.25,scrollVelocity*SCROLL_INFLUENCE));
-      position+=dir*(dt/1000)*30*SPEED+scrollBoost;
-      if(position>=frames.length-1){position=frames.length-1;dir=-1}
-      else if(position<=0){position=0;dir=1}
-      ctx.drawImage(frames[Math.max(0,Math.min(frames.length-1,Math.round(position)))],0,0,canvas.width,canvas.height);
-      requestAnimationFrame(loop);
-    };
-    requestAnimationFrame(loop);
+  const ready=()=>{
+    duration=Number.isFinite(video.duration)?video.duration:0;
+    video.pause();
+    video.removeAttribute('autoplay');
+    video.style.display='block';
+    canvas.style.display='none';
+    currentTime=targetTime=getProgress()*Math.max(0,duration-.035);
+    video.currentTime=currentTime;
+    syncToScroll();
+  };
+
+  video.pause();
+  video.addEventListener('loadedmetadata',ready,{once:true});
+  video.addEventListener('durationchange',()=>{
+    if(Number.isFinite(video.duration))duration=video.duration;
   });
-  if(video.readyState>=2)start();
+  window.addEventListener('scroll',syncToScroll,{passive:true});
+  window.addEventListener('resize',syncToScroll,{passive:true});
+  if(video.readyState>=1)ready();
 })();
