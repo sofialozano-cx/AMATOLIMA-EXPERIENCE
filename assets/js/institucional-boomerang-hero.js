@@ -20,15 +20,16 @@
 
   const resizeCanvas=()=>{
     const box=canvas.getBoundingClientRect();
-    const dpr=Math.min(window.devicePixelRatio||1,1.25);
+    const dpr=Math.min(window.devicePixelRatio||1,1.5);
     canvas.width=Math.max(1,Math.round(box.width*dpr));
     canvas.height=Math.max(1,Math.round(box.height*dpr));
-    // O chroma é processado em resolução reduzida e ampliado pelo canvas final.
-    // Isso corta drasticamente o custo por frame sem mudar o tamanho visual.
-    work.width=Math.max(1,Math.round(canvas.width*.5));
-    work.height=Math.max(1,Math.round(canvas.height*.5));
+    // Mais resolução no matte para preservar detalhes finos sem voltar ao custo do full-res.
+    work.width=Math.max(1,Math.round(canvas.width*.75));
+    work.height=Math.max(1,Math.round(canvas.height*.75));
     ctx.imageSmoothingEnabled=true;
     ctx.imageSmoothingQuality='high';
+    workCtx.imageSmoothingEnabled=true;
+    workCtx.imageSmoothingQuality='high';
   };
 
   const chromaFrame=()=>{
