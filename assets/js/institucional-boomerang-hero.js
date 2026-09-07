@@ -5,8 +5,8 @@
   const canvas=root.querySelector('canvas');
   if(!video||!canvas)return;
 
-  const source='assets/images/background/32036.mp4';
-  if(!video.getAttribute('src')||!video.getAttribute('src').endsWith('/32036.mp4')){
+  const source='assets/images/background/32039.mp4';
+  if(!video.getAttribute('src')||!video.getAttribute('src').endsWith('/32039.mp4')){
     video.src=source;
     video.load();
   }
@@ -34,19 +34,20 @@
     const img=ctx.getImageData(0,0,cw,ch),d=img.data;
     for(let i=0;i<d.length;i+=4){
       if(!d[i+3])continue;
-      const r=d[i],g=d[i+1],b=d[i+2];
-      const max=Math.max(r,g,b),min=Math.min(r,g,b);
-      const brightness=(r+g+b)/3;
-      const neutrality=max-min;
-      // Remove somente o fundo muito claro e neutro. A faixa de transição preserva
-      // antialiasing, vidro, concreto e bordas finas do edifício.
+      let r=d[i],g=d[i+1],b=d[i+2];
+      const greenLead=g-Math.max(r,b);
+      const greenStrength=g-(r+b)*.5;
       let alpha=255;
-      if(brightness>=244&&neutrality<=12)alpha=0;
-      else if(brightness>226&&neutrality<=18){
-        const tone=(244-brightness)/18;
-        const color=clamp((neutrality-5)/13,0,1);
-        alpha=Math.round(255*clamp(Math.max(tone,color),0,1));
+
+      // Chroma key verde com feather nas bordas.
+      if(g>70&&greenLead>48&&greenStrength>55)alpha=0;
+      else if(g>55&&greenLead>16&&greenStrength>20){
+        const edge=clamp((greenLead-16)/32,0,1);
+        alpha=Math.round(255*(1-edge));
       }
+
+      // Despill: remove reflexo verde das bordas sem alterar as cores do prédio.
+      if(alpha>0&&g>Math.max(r,b)){g=Math.min(g,Math.max(r,b)+8);d[i+1]=g;}
       d[i+3]=Math.min(d[i+3],alpha);
     }
     ctx.putImageData(img,0,0);
@@ -75,11 +76,9 @@
 
   const ready=()=>{
     duration=Number.isFinite(video.duration)?video.duration:0;
-    video.pause();
-    resizeCanvas();
+    video.pause();resizeCanvas();
     currentTime=targetTime=getProgress()*Math.max(0,duration-.04);
-    video.currentTime=currentTime;
-    lastApplied=currentTime;
+    video.currentTime=currentTime;lastApplied=currentTime;
     requestPaint();sync();
   };
 
