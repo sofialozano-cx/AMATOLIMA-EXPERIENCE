@@ -4,6 +4,12 @@
   const video=root.querySelector('video');
   if(!video)return;
 
+  const source='assets/images/background/32030.mp4';
+  if(!video.getAttribute('src')||!video.getAttribute('src').endsWith('/32030.mp4')){
+    video.src=source;
+    video.load();
+  }
+
   let duration=0;
   let targetTime=0;
   let currentTime=0;
