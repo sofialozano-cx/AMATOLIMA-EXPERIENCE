@@ -4,10 +4,11 @@
   const video=root.querySelector('video'),canvas=root.querySelector('canvas');
   if(!video||!canvas)return;
 
-  // O vídeo não roda sozinho: o tempo é controlado exclusivamente pelo scroll.
+  // Scrub contínuo: o vídeo não toca sozinho, mas desliza suavemente enquanto a página rola.
   let duration=0;
   let targetTime=0;
   let currentTime=0;
+  let lastApplied=-1;
   let raf=0;
 
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
@@ -18,23 +19,30 @@
     return clamp((window.innerHeight-rect.top)/travel,0,1);
   };
 
+  const updateTarget=()=>{
+    if(!duration)return;
+    targetTime=getProgress()*Math.max(0,duration-.045);
+    if(!raf)raf=requestAnimationFrame(render);
+  };
+
   const render=()=>{
     raf=0;
     if(!duration)return;
-    // Resposta rápida, mas com uma pequena suavização para não tremer em trackpads.
-    currentTime+=(targetTime-currentTime)*.38;
-    if(Math.abs(targetTime-currentTime)<.002)currentTime=targetTime;
-    const safeEnd=Math.max(0,duration-.035);
-    video.currentTime=clamp(currentTime,0,safeEnd);
-    if(Math.abs(targetTime-currentTime)>.002)raf=requestAnimationFrame(render);
-  };
 
-  const syncToScroll=()=>{
-    if(!duration)return;
-    const progress=getProgress();
-    const safeEnd=Math.max(0,duration-.035);
-    targetTime=progress*safeEnd;
-    if(!raf)raf=requestAnimationFrame(render);
+    // Lerp mais longo cria a sensação de o filme estar realmente rodando durante o scroll,
+    // em vez de saltar de frame em frame a cada evento da roda/trackpad.
+    const delta=targetTime-currentTime;
+    currentTime+=delta*.14;
+    if(Math.abs(delta)<.0015)currentTime=targetTime;
+
+    const safeTime=clamp(currentTime,0,Math.max(0,duration-.045));
+    // Evita seeks microscópicos demais, que fazem MP4/UHD parecer travado em alguns navegadores.
+    if(Math.abs(safeTime-lastApplied)>.006||safeTime===targetTime){
+      video.currentTime=safeTime;
+      lastApplied=safeTime;
+    }
+
+    if(Math.abs(targetTime-currentTime)>.0015)raf=requestAnimationFrame(render);
   };
 
   const ready=()=>{
@@ -43,9 +51,9 @@
     video.removeAttribute('autoplay');
     video.style.display='block';
     canvas.style.display='none';
-    currentTime=targetTime=getProgress()*Math.max(0,duration-.035);
+    currentTime=targetTime=getProgress()*Math.max(0,duration-.045);
     video.currentTime=currentTime;
-    syncToScroll();
+    lastApplied=currentTime;
   };
 
   video.pause();
@@ -53,7 +61,7 @@
   video.addEventListener('durationchange',()=>{
     if(Number.isFinite(video.duration))duration=video.duration;
   });
-  window.addEventListener('scroll',syncToScroll,{passive:true});
-  window.addEventListener('resize',syncToScroll,{passive:true});
+  window.addEventListener('scroll',updateTarget,{passive:true});
+  window.addEventListener('resize',updateTarget,{passive:true});
   if(video.readyState>=1)ready();
 })();
